@@ -35,6 +35,16 @@ interface PaymentSettings {
   config: Record<string, string>;
 }
 
+interface ChannelManagerSettings {
+  id: string;
+  provider: string;
+  is_enabled: boolean;
+  config: Record<string, string>;
+  last_sync_at?: string;
+  last_sync_status?: string;
+  last_error_message?: string;
+}
+
 export default function SettingsPage() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [resortName, setResortName] = useState("");
@@ -45,6 +55,10 @@ export default function SettingsPage() {
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState<PaymentSettings | null>(null);
   const [tempConfig, setTempConfig] = useState<Record<string, string>>({});
+
+  const [channelDialogOpen, setChannelDialogOpen] = useState(false);
+  const [selectedChannelPartner, setSelectedChannelPartner] = useState<ChannelManagerSettings | null>(null);
+  const [tempChannelConfig, setTempChannelConfig] = useState<Record<string, string>>({});
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -83,6 +97,15 @@ export default function SettingsPage() {
     },
   });
 
+  const { data: channelSettings, isLoading: channelLoading } = useQuery({
+    queryKey: ["admin", "channelSettings"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("channel_manager_settings").select("*");
+      if (error) throw error;
+      return data as ChannelManagerSettings[];
+    },
+  });
+
   const initializePaymentsMutation = useMutation({
     mutationFn: async () => {
       const { data: userData } = await supabase.auth.getUser();
@@ -114,6 +137,39 @@ export default function SettingsPage() {
         variant: "destructive",
         title: "Initialization Error",
         description: error.message || "Failed to initialize payment settings",
+      });
+    },
+  });
+
+  const initializeChannelsMutation = useMutation({
+    mutationFn: async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      const userId = userData.user?.id;
+
+      const partners = [
+        { provider: "ezee", config: { api_key: "", property_id: "", gateway_url: "https://cm.ezeecentrix.com/api/v1/xml/" }, updated_by: userId },
+        { provider: "booking.com", config: { api_key: "", hotel_id: "" }, updated_by: userId },
+      ];
+
+      const { error } = await supabase
+        .from("channel_manager_settings")
+        .upsert(partners, { onConflict: 'provider' });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "channelSettings"] });
+      toast({
+        title: "Channel partners initialized",
+        description: "eZee Centrix and Booking.com have been added.",
+      });
+    },
+    onError: (error: any) => {
+      console.error("Initialization Error:", error);
+      toast({
+        variant: "destructive",
+        title: "Initialization Error",
+        description: error.message || "Failed to initialize channel partners. Please check your admin permissions.",
       });
     },
   });
@@ -181,6 +237,61 @@ export default function SettingsPage() {
     },
   });
 
+  const updateChannelMutation = useMutation({
+    mutationFn: async ({ id, is_enabled, config }: Partial<ChannelManagerSettings> & { id: string }) => {
+      const updateData: any = {};
+      if (is_enabled !== undefined) updateData.is_enabled = is_enabled;
+      if (config !== undefined) updateData.config = config;
+      updateData.updated_by = (await supabase.auth.getUser()).data.user?.id;
+
+      const { error } = await supabase
+        .from("channel_manager_settings")
+        .update(updateData)
+        .eq("id", id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "channelSettings"] });
+      setChannelDialogOpen(false);
+      toast({
+        title: "Channel settings updated",
+        description: "Configuration has been saved successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to update channel manager settings",
+      });
+    },
+  });
+
+  const syncChannelMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { data, error } = await supabase.functions.invoke('sync-channel-manager', {
+        body: { settings_id: id }
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "channelSettings"] });
+      toast({
+        title: "Sync successful",
+        description: data.message || "Availability has been updated.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Sync failed",
+        description: error.message || "Failed to synchronize with partner",
+      });
+    },
+  });
+
   const handleEditClick = () => {
     if (resortSettings) {
       setResortName(resortSettings.resort_name);
@@ -197,6 +308,12 @@ export default function SettingsPage() {
     setPaymentDialogOpen(true);
   };
 
+  const handleConfigureChannel = (partner: ChannelManagerSettings) => {
+    setSelectedChannelPartner(partner);
+    setTempChannelConfig(partner.config || {});
+    setChannelDialogOpen(true);
+  };
+
   const activeTax = taxes?.find((t) => t.is_active);
 
   const getProviderLabel = (provider: string) => {
@@ -206,6 +323,14 @@ export default function SettingsPage() {
       case "paypal": return "PayPal";
       case "phonepe": return "PhonePe";
       default: return provider;
+    }
+  };
+
+  const getChannelLabel = (provider: string) => {
+    switch (provider) {
+      case "ezee": return "eZee Centrix";
+      case "booking.com": return "Booking.com";
+      default: return provider.charAt(0).toUpperCase() + provider.slice(1);
     }
   };
 
@@ -383,6 +508,103 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
+        {/* Channel Manager Integration */}
+        <Card className="border-0 shadow-sm md:col-span-2">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg font-serif flex items-center gap-2">
+                  <Settings className="h-5 w-5 text-[hsl(var(--gold))]" />
+                  Channel Manager Integration
+                </CardTitle>
+                <CardDescription>Connect to external booking platforms via API (e.g. Booking.com, eZee)</CardDescription>
+              </div>
+              {!channelLoading && (!channelSettings || channelSettings.length === 0) && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => initializeChannelsMutation.mutate()}
+                  disabled={initializeChannelsMutation.isPending}
+                >
+                  {initializeChannelsMutation.isPending ? "Initializing..." : "Initialize Providers"}
+                </Button>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent>
+            {channelLoading ? (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {[1].map((i) => <Skeleton key={i} className="h-40 w-full" />)}
+              </div>
+            ) : !channelSettings || channelSettings.length === 0 ? (
+              <div className="text-center py-8 border border-dashed rounded-lg">
+                <p className="text-sm text-muted-foreground">No channel managers configured yet.</p>
+              </div>
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {channelSettings.map((partner) => (
+                  <div
+                    key={partner.provider}
+                    className="p-4 rounded-lg border border-border bg-card/50 space-y-4"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {partner.provider === 'booking.com' ? (
+                          <Building2 className="h-5 w-5 text-blue-600" />
+                        ) : (
+                          <Building2 className="h-5 w-5 text-gold-deep" />
+                        )}
+                        <span className="font-medium">{getChannelLabel(partner.provider)}</span>
+                      </div>
+                      <Switch
+                        checked={partner.is_enabled}
+                        onCheckedChange={(checked) =>
+                          updateChannelMutation.mutate({ id: partner.id, is_enabled: checked })
+                        }
+                      />
+                    </div>
+
+                    <div className="text-xs space-y-1 py-1">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Status:</span>
+                        <span className={partner.last_sync_status === 'success' ? 'text-green-600 font-medium' : 'text-orange-500'}>
+                          {partner.last_sync_status === 'success' ? 'Connected' : partner.last_sync_status || 'Never Synced'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Last Sync:</span>
+                        <span>{partner.last_sync_at ? new Date(partner.last_sync_at).toLocaleString() : 'N/A'}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-2 border-t border-border/50">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 h-8 text-xs"
+                        onClick={() => handleConfigureChannel(partner)}
+                      >
+                        <Settings className="h-3 w-3 mr-1" />
+                        Credentials
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="flex-1 h-8 text-xs"
+                        onClick={() => syncChannelMutation.mutate(partner.id)}
+                        disabled={syncChannelMutation.isPending || !partner.is_enabled}
+                      >
+                        <Info className="h-3 w-3 mr-1" />
+                        Sync Now
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Future Features */}
         <Card className="border-0 shadow-sm md:col-span-2">
           <CardHeader>
@@ -521,6 +743,51 @@ export default function SettingsPage() {
               disabled={updatePaymentMutation.isPending}
             >
               {updatePaymentMutation.isPending ? "Saving..." : "Save Configuration"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={channelDialogOpen} onOpenChange={setChannelDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Configure {getChannelLabel(selectedChannelPartner?.provider || "")}</DialogTitle>
+            <DialogDescription>
+              Enter API credentials provided by your channel manager.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {Object.keys(tempChannelConfig).map((key) => (
+              <div key={key} className="space-y-2">
+                <Label htmlFor={`channel-${key}`} className="capitalize">
+                  {key.replace(/_/g, " ")}
+                </Label>
+                <Input
+                  id={`channel-${key}`}
+                  type={key.includes('pass') || key.includes('key') ? "password" : "text"}
+                  value={tempChannelConfig[key]}
+                  onChange={(e) => setTempChannelConfig({ ...tempChannelConfig, [key]: e.target.value })}
+                  placeholder={`Enter ${key.replace(/_/g, " ")}`}
+                />
+              </div>
+            ))}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setChannelDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() =>
+                updateChannelMutation.mutate({
+                  id: selectedChannelPartner!.id,
+                  config: tempChannelConfig
+                })
+              }
+              disabled={updateChannelMutation.isPending}
+            >
+              {updateChannelMutation.isPending ? "Saving..." : "Save Credentials"}
             </Button>
           </DialogFooter>
         </DialogContent>
