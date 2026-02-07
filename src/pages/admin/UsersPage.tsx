@@ -53,6 +53,9 @@ export default function UsersPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [email, setEmail] = useState("");
 
+  const [fullName, setFullName] = useState("");
+  const [password, setPassword] = useState("");
+
   const { data: userRoles, isLoading } = useQuery({
     queryKey: ["admin", "userRoles"],
     queryFn: async () => {
@@ -68,40 +71,37 @@ export default function UsersPage() {
   });
 
   const addStaffMutation = useMutation({
-    mutationFn: async (staffEmail: string) => {
-      // First, check if user exists in auth
-      // Note: We can't directly query auth.users, so we'll add the role entry
-      // The user must have signed up first
-      
-      // For now, we'll create an invitation-style system
-      // The email is stored and when that user signs up, they get the role
-      
-      // Check if role already exists for this email
-      // Since we can't query by email, we'll just insert and let unique constraint handle it
-      
-      const { error } = await supabase
-        .from("user_roles")
-        .insert({
-          user_id: "00000000-0000-0000-0000-000000000000", // Placeholder - will need to be updated when user signs up
-          role: "staff" as AppRole,
-        });
+    mutationFn: async () => {
+      const { data, error } = await supabase.functions.invoke("create-user", {
+        body: {
+          email,
+          password,
+          fullName,
+          role: "staff",
+        },
+      });
 
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "userRoles"] });
       setDialogOpen(false);
       setEmail("");
-      toast({ 
-        title: "Staff role added", 
-        description: "The user has been granted staff access." 
+      setPassword("");
+      setFullName("");
+      toast({
+        title: "Staff account created",
+        description: "The new staff member has been added successfully."
       });
     },
     onError: (error: any) => {
-      toast({ 
-        variant: "destructive", 
-        title: "Error", 
-        description: error.message 
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to create staff account"
       });
     },
   });
@@ -120,10 +120,10 @@ export default function UsersPage() {
       toast({ title: "Role removed" });
     },
     onError: (error: any) => {
-      toast({ 
-        variant: "destructive", 
-        title: "Error", 
-        description: error.message 
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message
       });
     },
   });
@@ -149,7 +149,14 @@ export default function UsersPage() {
             Manage admin and staff access
           </p>
         </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog open={dialogOpen} onOpenChange={(open) => {
+          setDialogOpen(open);
+          if (!open) {
+            setEmail("");
+            setPassword("");
+            setFullName("");
+          }
+        }}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
@@ -160,16 +167,26 @@ export default function UsersPage() {
             <DialogHeader>
               <DialogTitle>Add Staff Member</DialogTitle>
               <DialogDescription>
-                Grant staff access to a user. They must have already created an account.
+                Create a new account for a staff member. They will be able to log in with these credentials.
               </DialogDescription>
             </DialogHeader>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                addStaffMutation.mutate(email);
+                addStaffMutation.mutate();
               }}
               className="space-y-4 py-4"
             >
+              <div className="space-y-2">
+                <Label htmlFor="fullName">Full Name</Label>
+                <Input
+                  id="fullName"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="John Doe"
+                  required
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
                 <Input
@@ -180,9 +197,18 @@ export default function UsersPage() {
                   placeholder="staff@example.com"
                   required
                 />
-                <p className="text-xs text-muted-foreground">
-                  The user must sign up first, then you can add them here.
-                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  minLength={6}
+                />
               </div>
               <div className="flex justify-end gap-3 pt-4">
                 <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
@@ -283,7 +309,7 @@ export default function UsersPage() {
             <div>
               <p className="font-medium text-sm">Security Note</p>
               <p className="text-sm text-muted-foreground mt-1">
-                Super Admin roles can only be assigned directly in the database for security reasons. 
+                Super Admin roles can only be assigned directly in the database for security reasons.
                 Staff members have limited access and cannot modify pricing or delete data.
               </p>
             </div>
