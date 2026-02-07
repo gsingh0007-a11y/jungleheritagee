@@ -1,0 +1,337 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Luxury Forest Resort Color Palette */
+    --background: 40 33% 98%;
+    --foreground: 150 30% 15%;
+
+    --card: 40 30% 96%;
+    --card-foreground: 150 30% 15%;
+
+    --popover: 40 33% 98%;
+    --popover-foreground: 150 30% 15%;
+
+    /* Deep Forest Green - Primary */
+    --primary: 160 35% 18%;
+    --primary-foreground: 40 33% 98%;
+
+    /* Warm Beige - Secondary */
+    --secondary: 35 30% 90%;
+    --secondary-foreground: 150 30% 15%;
+
+    /* Earthy Brown - Muted */
+    --muted: 30 20% 88%;
+    --muted-foreground: 30 15% 40%;
+
+    /* Gold Accent */
+    --accent: 40 70% 45%;
+    --accent-foreground: 40 33% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 40 33% 98%;
+
+    --border: 35 25% 85%;
+    --input: 35 25% 85%;
+    --ring: 160 35% 18%;
+
+    --radius: 0.75rem;
+
+    /* Custom Luxury Variables */
+    --forest-deep: 158 40% 12%;
+    --forest: 160 35% 18%;
+    --forest-light: 155 25% 35%;
+    --earth-dark: 25 35% 25%;
+    --earth: 30 25% 40%;
+    --earth-light: 35 20% 55%;
+    --ivory: 40 33% 98%;
+    --cream: 40 30% 94%;
+    --gold: 40 70% 45%;
+    --gold-light: 42 65% 60%;
+    --gold-muted: 38 40% 70%;
+
+    /* Gradients */
+    --gradient-forest: linear-gradient(135deg, hsl(158 40% 12%) 0%, hsl(160 35% 22%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(40 70% 45%) 0%, hsl(42 65% 55%) 100%);
+    --gradient-overlay: linear-gradient(180deg, rgba(26, 58, 47, 0.7) 0%, rgba(26, 58, 47, 0.3) 50%, rgba(26, 58, 47, 0.8) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(40 30% 96%) 0%, hsl(40 33% 98%) 100%);
+
+    /* Glass Effect */
+    --glass-bg: hsla(40, 33%, 98%, 0.85);
+    --glass-border: hsla(40, 30%, 90%, 0.5);
+
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -4px hsla(150, 30%, 15%, 0.08);
+    --shadow-medium: 0 8px 30px -8px hsla(150, 30%, 15%, 0.12);
+    --shadow-luxury: 0 20px 60px -15px hsla(150, 30%, 15%, 0.15);
+    --shadow-gold: 0 4px 20px -4px hsla(40, 70%, 45%, 0.25);
+
+    /* Typography */
+    --font-serif: 'Playfair Display', Georgia, serif;
+    --font-sans: 'Inter', system-ui, sans-serif;
+
+    /* Sidebar */
+    --sidebar-background: 40 33% 98%;
+    --sidebar-foreground: 150 30% 15%;
+    --sidebar-primary: 160 35% 18%;
+    --sidebar-primary-foreground: 40 33% 98%;
+    --sidebar-accent: 35 30% 90%;
+    --sidebar-accent-foreground: 150 30% 15%;
+    --sidebar-border: 35 25% 85%;
+    --sidebar-ring: 160 35% 18%;
+  }
+
+  .dark {
+    --background: 158 40% 8%;
+    --foreground: 40 33% 95%;
+
+    --card: 158 35% 12%;
+    --card-foreground: 40 33% 95%;
+
+    --popover: 158 40% 8%;
+    --popover-foreground: 40 33% 95%;
+
+    --primary: 40 70% 50%;
+    --primary-foreground: 158 40% 8%;
+
+    --secondary: 158 25% 18%;
+    --secondary-foreground: 40 33% 95%;
+
+    --muted: 158 20% 15%;
+    --muted-foreground: 40 20% 65%;
+
+    --accent: 40 70% 50%;
+    --accent-foreground: 158 40% 8%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 40 33% 95%;
+
+    --border: 158 25% 20%;
+    --input: 158 25% 20%;
+    --ring: 40 70% 50%;
+
+    --sidebar-background: 158 40% 8%;
+    --sidebar-foreground: 40 33% 95%;
+    --sidebar-primary: 40 70% 50%;
+    --sidebar-primary-foreground: 158 40% 8%;
+    --sidebar-accent: 158 25% 18%;
+    --sidebar-accent-foreground: 40 33% 95%;
+    --sidebar-border: 158 25% 20%;
+    --sidebar-ring: 40 70% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+  }
+}
+
+@layer components {
+  .luxury-container {
+    @apply max-w-7xl mx-auto px-5 sm:px-8 lg:px-12;
+  }
+
+  .luxury-section {
+    @apply py-20 md:py-28 lg:py-36;
+  }
+
+  .luxury-heading {
+    font-family: var(--font-serif);
+    @apply text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight;
+  }
+
+  .luxury-subheading {
+    font-family: var(--font-serif);
+    @apply text-xl md:text-2xl font-normal italic text-muted-foreground;
+  }
+
+  .luxury-label {
+    @apply text-xs uppercase tracking-[0.2em] font-medium;
+    color: hsl(var(--gold));
+  }
+
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .gold-text {
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hover-lift {
+    @apply transition-all duration-700 ease-out;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-12px);
+    box-shadow: var(--shadow-luxury);
+  }
+
+  .luxury-divider {
+    @apply w-20 h-[1px] mx-auto;
+    background: var(--gradient-gold);
+  }
+
+  .image-zoom {
+    @apply overflow-hidden;
+  }
+
+  .image-zoom img {
+    @apply transition-transform ease-out;
+    transition-duration: 800ms;
+  }
+
+  .image-zoom:hover img {
+    transform: scale(1.08);
+  }
+
+  /* Premium Button Glow Effect */
+  .btn-glow {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-glow::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: 0.5s;
+  }
+
+  .btn-glow:hover::before {
+    left: 100%;
+  }
+
+  /* Elegant Underline Animation */
+  .link-underline {
+    position: relative;
+    display: inline-block;
+  }
+
+  .link-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: hsl(var(--gold));
+    transition: width 0.4s ease;
+  }
+
+  .link-underline:hover::after {
+    width: 100%;
+  }
+
+  /* Parallax Container */
+  .parallax-container {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .parallax-bg {
+    position: absolute;
+    inset: -10%;
+    transition: transform 0.1s ease-out;
+  }
+}
+
+@layer utilities {
+  .animate-fade-up {
+    animation: fadeUp 0.8s ease-out forwards;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 1s ease-out forwards;
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.6s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.5s ease-out forwards;
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .stagger-1 { animation-delay: 0.1s; }
+  .stagger-2 { animation-delay: 0.2s; }
+  .stagger-3 { animation-delay: 0.3s; }
+  .stagger-4 { animation-delay: 0.4s; }
+  .stagger-5 { animation-delay: 0.5s; }
+}
