@@ -66,7 +66,7 @@ export function Footer() {
             untouched forests, exotic wildlife, and unparalleled hospitality.
           </p>
           <div className="flex items-center gap-4">
-            <a href="https://www.instagram.com/jungleheritage/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-ivory/20 flex items-center justify-center hover:bg-gold hover:border-gold transition-all duration-300" aria-label="Instagram">
+            <a href="https://www.instagram.com/jungleheritage.in" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-ivory/20 flex items-center justify-center hover:bg-gold hover:border-gold transition-all duration-300" aria-label="Instagram">
               <Instagram className="w-4 h-4" />
             </a>
             <a href="https://www.facebook.com/jungleheritage" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-ivory/20 flex items-center justify-center hover:bg-gold hover:border-gold transition-all duration-300" aria-label="Facebook">

@@ -15,7 +15,6 @@ import {
     ChevronRight,
     Facebook,
     Instagram,
-    Linkedin
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
@@ -135,11 +134,9 @@ export default function BlogDetail() {
                                     <a href="https://www.facebook.com/jungleheritage" target="_blank" rel="noopener noreferrer" className="p-3 bg-[hsl(var(--gold))/0.05] rounded-full text-[hsl(var(--gold))] cursor-pointer hover:bg-[hsl(var(--gold))] hover:text-white transition-all">
                                         <Facebook className="h-5 w-5" />
                                     </a>
-                                    <a href="https://www.instagram.com/jungleheritage/" target="_blank" rel="noopener noreferrer" className="p-3 bg-[hsl(var(--gold))/0.05] rounded-full text-[hsl(var(--gold))] cursor-pointer hover:bg-[hsl(var(--gold))] hover:text-white transition-all">
+                                    <a href="https://www.instagram.com/jungleheritage.in" target="_blank" rel="noopener noreferrer" className="p-3 bg-[hsl(var(--gold))/0.05] rounded-full text-[hsl(var(--gold))] cursor-pointer hover:bg-[hsl(var(--gold))] hover:text-white transition-all">
                                         <Instagram className="h-5 w-5" />
                                     </a>
-                                    <div className="w-[1px] h-12 bg-border my-2" />
-                                    <Linkedin className="h-5 w-5 text-muted-foreground hover:text-[#0A66C2] cursor-pointer transition-colors" />
                                 </div>
                             </aside>
 
@@ -198,7 +195,7 @@ export default function BlogDetail() {
                                         <a href="https://www.facebook.com/jungleheritage" target="_blank" rel="noopener noreferrer">
                                             <Facebook className="h-5 w-5 text-muted-foreground" />
                                         </a>
-                                        <a href="https://www.instagram.com/jungleheritage/" target="_blank" rel="noopener noreferrer">
+                                        <a href="https://www.instagram.com/jungleheritage.in" target="_blank" rel="noopener noreferrer">
                                             <Instagram className="h-5 w-5 text-muted-foreground" />
                                         </a>
                                     </div>

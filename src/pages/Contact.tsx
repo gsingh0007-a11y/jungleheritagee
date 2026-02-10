@@ -138,7 +138,7 @@ const Contact = () => {
                     <div>
                       <h3 className="font-medium text-foreground">Phone</h3>
                       <p className="text-muted-foreground">+91 9250225752</p>
-                      <p className="text-sm text-muted-foreground">Available 24/7 for reservations</p>
+                      <p className="text-sm text-muted-foreground">Nearby Kishanpur Gate</p>
                     </div>
                   </a>
 
@@ -178,7 +178,12 @@ const Contact = () => {
                       <p className="text-muted-foreground">
                         Jungle Heritage Resort, Bhira,
                         <br />
+                        Near Kishanpur Gate,
+                        <br />
                         Jagdevpur, Uttar Pradesh 262901
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Dudhwa National Park has two major zones: <strong>Kishanpur</strong> and <strong>Dudhwa</strong>.
                       </p>
                     </div>
                   </div>
