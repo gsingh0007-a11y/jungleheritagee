@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Rooms from "./pages/Rooms";
- import RoomDetail from "./pages/RoomDetail";
+import RoomDetail from "./pages/RoomDetail";
 import Experiences from "./pages/Experiences";
 import Amenities from "./pages/Amenities";
 import Packages from "./pages/Packages";
@@ -19,6 +19,8 @@ import GuestSignup from "./pages/GuestSignup";
 import GuestAccount from "./pages/GuestAccount";
 import About from "./pages/About";
 import Careers from "./pages/Careers";
+import Blogs from "./pages/Blogs";
+import BlogDetail from "./pages/BlogDetail";
 import NotFound from "./pages/NotFound";
 
 // Admin Pages
@@ -31,8 +33,8 @@ import CalendarPage from "./pages/admin/CalendarPage";
 import RoomsPage from "./pages/admin/RoomsPage";
 import PackagesPage from "./pages/admin/PackagesPage";
 import GalleryPage from "./pages/admin/GalleryPage";
- import ExperiencesPage from "./pages/admin/ExperiencesPage";
- import ExperienceDetail from "./pages/ExperienceDetail";
+import ExperiencesPage from "./pages/admin/ExperiencesPage";
+import ExperienceDetail from "./pages/ExperienceDetail";
 import PricingPage from "./pages/admin/PricingPage";
 import EnquiriesPage from "./pages/admin/EnquiriesPage";
 import ReportsPage from "./pages/admin/ReportsPage";
@@ -40,6 +42,7 @@ import SettingsPage from "./pages/admin/SettingsPage";
 import UsersPage from "./pages/admin/UsersPage";
 import GuestsPage from "./pages/admin/GuestsPage";
 import ReviewsPage from "./pages/admin/ReviewsPage";
+import BlogsPage from "./pages/admin/BlogsPage";
 
 const queryClient = new QueryClient();
 
@@ -54,15 +57,17 @@ const App = () => (
             {/* Public Routes */}
             <Route path="/" element={<Index />} />
             <Route path="/rooms" element={<Rooms />} />
-             <Route path="/rooms/:slug" element={<RoomDetail />} />
+            <Route path="/rooms/:slug" element={<RoomDetail />} />
             <Route path="/experiences" element={<Experiences />} />
-             <Route path="/experiences/:slug" element={<ExperienceDetail />} />
+            <Route path="/experiences/:slug" element={<ExperienceDetail />} />
             <Route path="/amenities" element={<Amenities />} />
             <Route path="/packages" element={<Packages />} />
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/about" element={<About />} />
             <Route path="/careers" element={<Careers />} />
+            <Route path="/blog" element={<Blogs />} />
+            <Route path="/blog/:slug" element={<BlogDetail />} />
             <Route path="/booking" element={<BookingNew />} />
             <Route path="/booking/confirmation" element={<BookingConfirmation />} />
 
@@ -80,7 +85,7 @@ const App = () => (
               <Route path="calendar" element={<CalendarPage />} />
               <Route path="rooms" element={<RoomsPage />} />
               <Route path="packages" element={<PackagesPage />} />
-               <Route path="experiences" element={<ExperiencesPage />} />
+              <Route path="experiences" element={<ExperiencesPage />} />
               <Route path="gallery" element={<GalleryPage />} />
               <Route path="pricing" element={<PricingPage />} />
               <Route path="enquiries" element={<EnquiriesPage />} />
@@ -89,6 +94,7 @@ const App = () => (
               <Route path="users" element={<UsersPage />} />
               <Route path="guests" element={<GuestsPage />} />
               <Route path="reviews" element={<ReviewsPage />} />
+              <Route path="blogs" element={<BlogsPage />} />
             </Route>
 
             {/* Catch-all */}

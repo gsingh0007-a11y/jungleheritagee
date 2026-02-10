@@ -1,11 +1,11 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { 
-  LayoutDashboard, 
-  CalendarDays, 
+import {
+  LayoutDashboard,
+  CalendarDays,
   CalendarRange,
-  BedDouble, 
-  Package, 
+  BedDouble,
+  Package,
   DollarSign,
   MessageSquare,
   BarChart3,
@@ -15,7 +15,8 @@ import {
   ChevronLeft,
   Images,
   Compass,
-  Star
+  Star,
+  FileText
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -30,71 +31,76 @@ interface AdminSidebarProps {
 }
 
 const navItems = [
-  { 
-    title: "Dashboard", 
-    href: "/admin", 
+  {
+    title: "Dashboard",
+    href: "/admin",
     icon: LayoutDashboard,
-    exact: true 
+    exact: true
   },
-  { 
-    title: "Bookings", 
-    href: "/admin/bookings", 
-    icon: CalendarDays 
+  {
+    title: "Bookings",
+    href: "/admin/bookings",
+    icon: CalendarDays
   },
-  { 
-    title: "Calendar", 
-    href: "/admin/calendar", 
-    icon: CalendarRange 
+  {
+    title: "Calendar",
+    href: "/admin/calendar",
+    icon: CalendarRange
   },
-  { 
-    title: "Rooms", 
-    href: "/admin/rooms", 
-    icon: BedDouble 
+  {
+    title: "Rooms",
+    href: "/admin/rooms",
+    icon: BedDouble
   },
-  { 
-    title: "Packages", 
-    href: "/admin/packages", 
-    icon: Package 
+  {
+    title: "Packages",
+    href: "/admin/packages",
+    icon: Package
   },
-   { 
-     title: "Experiences", 
-     href: "/admin/experiences", 
-     icon: Compass 
-   },
-  { 
-    title: "Gallery", 
-    href: "/admin/gallery", 
-    icon: Images 
+  {
+    title: "Experiences",
+    href: "/admin/experiences",
+    icon: Compass
   },
-  { 
-    title: "Reviews", 
-    href: "/admin/reviews", 
-    icon: Star 
+  {
+    title: "Gallery",
+    href: "/admin/gallery",
+    icon: Images
   },
-  { 
-    title: "Pricing", 
-    href: "/admin/pricing", 
-    icon: DollarSign 
+  {
+    title: "Reviews",
+    href: "/admin/reviews",
+    icon: Star
   },
-  { 
-    title: "Enquiries", 
-    href: "/admin/enquiries", 
-    icon: MessageSquare 
+  {
+    title: "Pricing",
+    href: "/admin/pricing",
+    icon: DollarSign
   },
-  { 
-    title: "Guests", 
-    href: "/admin/guests", 
-    icon: UserCheck 
+  {
+    title: "Enquiries",
+    href: "/admin/enquiries",
+    icon: MessageSquare
   },
-  { 
-    title: "Reports", 
-    href: "/admin/reports", 
-    icon: BarChart3 
+  {
+    title: "Blogs",
+    href: "/admin/blogs",
+    icon: FileText
   },
-  { 
-    title: "Settings", 
-    href: "/admin/settings", 
-    icon: Settings 
+  {
+    title: "Guests",
+    href: "/admin/guests",
+    icon: UserCheck
+  },
+  {
+    title: "Reports",
+    href: "/admin/reports",
+    icon: BarChart3
+  },
+  {
+    title: "Settings",
+    href: "/admin/settings",
+    icon: Settings
   },
 ];
 
