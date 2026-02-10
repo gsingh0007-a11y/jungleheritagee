@@ -22,6 +22,8 @@ import Careers from "./pages/Careers";
 import Blogs from "./pages/Blogs";
 import BlogDetail from "./pages/BlogDetail";
 import NotFound from "./pages/NotFound";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
 
 // Admin Pages
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -70,6 +72,8 @@ const App = () => (
             <Route path="/blog/:slug" element={<BlogDetail />} />
             <Route path="/booking" element={<BookingNew />} />
             <Route path="/booking/confirmation" element={<BookingConfirmation />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsAndConditions />} />
 
             {/* Guest Auth Routes */}
             <Route path="/login" element={<GuestLogin />} />
