@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Instagram, Facebook, MessageCircle } from "lucide-react";
 import logoImage from "@/assets/logo.png";
+import { useExperiences } from "@/hooks/useExperiences";
+
 const PHONE_NUMBER = "9250225752";
+
 const quickLinks = [{
   name: "Rooms & Villas",
   path: "/rooms"
@@ -27,23 +30,24 @@ const quickLinks = [{
   name: "Contact Us",
   path: "/contact"
 }];
-const experienceLinks = [{
-  name: "Jungle Safari",
-  path: "/experiences"
-}, {
-  name: "Nature Walk",
-  path: "/experiences"
-}, {
-  name: "Bird Watching",
-  path: "/experiences"
-}, {
-  name: "Candlelight Dinner",
-  path: "/experiences"
-}, {
-  name: "Weddings & Events",
-  path: "/weddings"
-}];
+
 export function Footer() {
+  const { data: experiences } = useExperiences();
+
+  // Use fetched experiences or fallback to defaults if loading/empty
+  const displayExperiences = experiences && experiences.length > 0
+    ? experiences.slice(0, 5).map(exp => ({
+      name: exp.name,
+      path: `/experiences/${exp.slug}`
+    }))
+    : [
+      { name: "Jungle Safari", path: "/experiences/jungle-safari" },
+      { name: "Nature Walk", path: "/experiences/nature-walk" },
+      { name: "Bird Watching", path: "/experiences/bird-watching" },
+      { name: "Candlelight Dinner", path: "/experiences/candlelight-dinner" },
+      { name: "Weddings & Events", path: "/experiences/weddings-events" }
+    ];
+
   return <footer className="bg-forest-deep text-ivory">
     {/* Main Footer */}
     <div className="luxury-container py-16 md:py-20">
@@ -91,7 +95,7 @@ export function Footer() {
         <div>
           <h4 className="font-serif text-lg font-medium mb-6">Experiences</h4>
           <ul className="space-y-3">
-            {experienceLinks.map(link => <li key={link.name}>
+            {displayExperiences.map(link => <li key={link.name}>
               <Link to={link.path} className="text-ivory/70 hover:text-gold transition-colors duration-300 text-sm">
                 {link.name}
               </Link>
@@ -117,7 +121,7 @@ export function Footer() {
               </a>
             </li>
             <li>
-              <a href="mailto:reservations@jungleheritage.com" className="flex items-center gap-3 text-ivory/70 hover:text-gold transition-colors duration-300">
+              <a href="mailto:reservation@jungleheritage.in" className="flex items-center gap-3 text-ivory/70 hover:text-gold transition-colors duration-300">
                 <Mail className="w-5 h-5 text-gold shrink-0" />
                 <span className="text-sm">reservation@jungleheritage.in</span>
               </a>

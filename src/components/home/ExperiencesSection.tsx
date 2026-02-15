@@ -79,7 +79,7 @@ export function ExperiencesSection() {
             duration: 0.8,
             delay: 0.2
           }} className="lg:col-span-7 group">
-            <Link to={`/experiences`} className="block">
+            <Link to={`/experiences/${displayExperiences[0].slug}`} className="block">
               <div className="relative overflow-hidden rounded-3xl aspect-[4/3] lg:aspect-[16/12]">
                 {displayExperiences[0].image_url ? <img src={displayExperiences[0].image_url} alt={displayExperiences[0].name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" /> : <div className="w-full h-full bg-muted flex items-center justify-center">
                   <span className="text-muted-foreground">No Image</span>
@@ -89,10 +89,10 @@ export function ExperiencesSection() {
                 {/* Content Overlay */}
                 <div className="absolute bottom-0 left-0 right-0 p-8 lg:p-10">
                   <span className="inline-block px-4 py-1.5 bg-gold/20 backdrop-blur-sm rounded-full text-gold-light text-xs uppercase tracking-widest mb-4">
-                    {displayExperiences[0].category || "Experience"}
+                    {displayExperiences[0].subtitle || "Experience"}
                   </span>
                   <h3 className="font-serif text-3xl lg:text-4xl font-medium text-ivory mb-3 group-hover:text-gold-light transition-colors">
-                    {displayExperiences[0].title}
+                    {displayExperiences[0].name}
                   </h3>
                   <p className="text-ivory/80 text-base leading-relaxed max-w-md line-clamp-2">
                     {displayExperiences[0].description || "Discover this unique experience."}
@@ -118,18 +118,18 @@ export function ExperiencesSection() {
               duration: 0.8,
               delay: 0.3 + index * 0.1
             }} className="group">
-              <Link to={`/experiences`} className="flex gap-5 items-center p-4 rounded-2xl hover:bg-cream transition-all duration-300">
+              <Link to={`/experiences/${experience.slug}`} className="flex gap-5 items-center p-4 rounded-2xl hover:bg-cream transition-all duration-300">
                 <div className="relative overflow-hidden rounded-2xl w-28 h-28 md:w-32 md:h-32 flex-shrink-0">
-                  {experience.image_url ? <img src={experience.image_url} alt={experience.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" /> : <div className="w-full h-full bg-muted flex items-center justify-center">
+                  {experience.image_url ? <img src={experience.image_url} alt={experience.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" /> : <div className="w-full h-full bg-muted flex items-center justify-center">
                     <span className="text-muted-foreground text-xs">No Image</span>
                   </div>}
                 </div>
                 <div className="flex-1 min-w-0">
                   <span className="text-gold text-xs uppercase tracking-widest font-medium">
-                    {experience.category || "Experience"}
+                    {experience.subtitle || "Experience"}
                   </span>
                   <h3 className="font-serif text-xl md:text-2xl font-medium text-foreground mt-1 group-hover:text-forest transition-colors">
-                    {experience.title}
+                    {experience.name}
                   </h3>
                   <p className="text-muted-foreground text-sm mt-2 line-clamp-2 leading-relaxed">
                     {experience.description || "Discover this unique experience."}
