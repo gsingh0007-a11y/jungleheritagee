@@ -48,11 +48,11 @@ serve(async (req) => {
             }), { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 });
         }
 
-        // Prefer 1.5-flash, then 1.5-pro, then pro, then anything else
-        // Sort/Find logic
+        // Prefer 1.5-flash as it is the most quota-friendly for free tier.
+        // Filter out 'latest' models which often have stricter quotas or are experimental/paid.
         let selectedModel = chatModels.find((m: any) => m.name.includes("gemini-1.5-flash")) ||
-            chatModels.find((m: any) => m.name.includes("gemini-1.5-pro")) ||
-            chatModels.find((m: any) => m.name.includes("gemini-pro")) ||
+            chatModels.find((m: any) => m.name.includes("gemini-1.5-pro") && !m.name.includes("latest")) ||
+            chatModels.find((m: any) => m.name.includes("gemini-pro") && !m.name.includes("latest")) ||
             chatModels[0];
 
         // The name comes back as "models/gemini-pro", we need just "gemini-pro" for some endpoints, 
