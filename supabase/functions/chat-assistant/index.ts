@@ -13,13 +13,21 @@ serve(async (req) => {
     }
 
     try {
-        const { messages, userId, sessionId } = await req.json();
+        const body = await req.json();
+        const { messages, userId, sessionId } = body;
+
+        console.log("Received request:", { userId, sessionId, messageCount: messages?.length });
+
         const apiKey = Deno.env.get("GEMINI_API_KEY");
         const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
         const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
         if (!apiKey) {
-            throw new Error("GEMINI_API_KEY is not set");
+            console.error("Missing GEMINI_API_KEY");
+            return new Response(JSON.stringify({ error: "Configuration Error: GEMINI_API_KEY is missing." }), {
+                headers: { ...corsHeaders, "Content-Type": "application/json" },
+                status: 200, // Return 200 to allow client to read error
+            });
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
@@ -48,10 +56,6 @@ serve(async (req) => {
             parts: [{ text: m.content }],
         }));
 
-        // Prepend system prompt to history or use systemInstruction if supported by SDK version
-        // For safety, we'll just prepend it to the first message or rely on the model's ability to handle it.
-        // Deno SDK might be slightly different, but let's try standard chat.
-
         const chat = model.startChat({
             history: [
                 {
@@ -70,52 +74,57 @@ serve(async (req) => {
         });
 
         const lastMessage = messages[messages.length - 1].content;
-        const result = await chat.sendMessage(lastMessage);
-        const responseText = result.response.text();
+        let responseText = "";
+
+        try {
+            const result = await chat.sendMessage(lastMessage);
+            responseText = result.response.text();
+            console.log("Gemini Response generated");
+        } catch (aiError) {
+            console.error("Gemini API Error:", aiError);
+            return new Response(JSON.stringify({ error: `AI Error: ${aiError.message}` }), {
+                headers: { ...corsHeaders, "Content-Type": "application/json" },
+                status: 200,
+            });
+        }
 
         // 2. Extract Lead Info (Lightweight parallel call)
-        // We only check if the last message potentially contains lead info
-        const extractionPrompt = `Analyze this message: "${lastMessage}". Does it contain Name, Email, Phone, Dates, or Guest Count? Return JSON: { "name": string|null, "email": string|null, "phone": string|null, "dates": string|null, "guests": string|null, "type": "booking"|"general"|"safari"|"wedding" }. Return {} if nothing found.`;
-
-        // We won't block the response on this, but for simplicity in this script we await it.
-        // In a production edge function, we might want to fire-and-forget or use a separate queue, 
-        // but Deno edge functions kill bg processes early. We must await.
-        const extractionModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: { responseMimeType: "application/json" } });
-        const extractionResult = await extractionModel.generateContent(extractionPrompt);
-        const extractionText = extractionResult.response.text();
-
         let leadData = {};
         try {
+            const extractionPrompt = `Analyze this message: "${lastMessage}". Does it contain Name, Email, Phone, Dates, or Guest Count? Return JSON: { "name": string|null, "email": string|null, "phone": string|null, "dates": string|null, "guests": string|null, "type": "booking"|"general"|"safari"|"wedding" }. Return {} if nothing found.`;
+            const extractionModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: { responseMimeType: "application/json" } });
+            const extractionResult = await extractionModel.generateContent(extractionPrompt);
+            const extractionText = extractionResult.response.text();
             leadData = JSON.parse(extractionText);
         } catch (e) {
-            console.error("Failed to parse extraction JSON", e);
+            console.error("Extraction Warning:", e);
+            // Non-critical, continue
         }
 
         // 3. Save to Database
-        // Update Session
-        const updatedMessages = [...messages, { role: "assistant", content: responseText }];
+        try {
+            if (sessionId) {
+                const updatedMessages = [...messages, { role: "assistant", content: responseText }];
+                const { error: sessionError } = await supabase.from("chat_sessions").upsert({
+                    id: sessionId,
+                    user_id: userId,
+                    messages: updatedMessages,
+                    updated_at: new Date().toISOString()
+                });
+                if (sessionError) console.error("Session Save Error:", sessionError);
+            }
 
-        if (sessionId) {
-            await supabase.from("chat_sessions").upsert({
-                id: sessionId,
-                user_id: userId,
-                messages: updatedMessages,
-                updated_at: new Date().toISOString()
-            });
-        }
-
-        // Update Lead if data found
-        if (leadData && Object.values(leadData).some(v => v)) {
-            // Simple dedupe by email or create new
-            // For now, just insert/update based on session? 
-            // Let's just create a new lead entry or update if we can link it.
-            // Since we don't have a lead_id in session yet, we'll just insert for now.
-            // Improving: real app would link session to lead.
-            await supabase.from("chat_leads").insert({
-                ...leadData,
-                status: 'new',
-                inquiry_type: leadData.type || 'general'
-            });
+            if (leadData && Object.values(leadData).some(v => v)) {
+                const { error: leadError } = await supabase.from("chat_leads").insert({
+                    ...leadData,
+                    status: 'new',
+                    inquiry_type: leadData.type || 'general'
+                });
+                if (leadError) console.error("Lead Save Error:", leadError);
+            }
+        } catch (dbError) {
+            console.error("Database Operation Error:", dbError);
+            // Don't fail request if DB fails, still return response to user
         }
 
         return new Response(JSON.stringify({ response: responseText, lead: leadData }), {
@@ -123,10 +132,10 @@ serve(async (req) => {
         });
 
     } catch (error) {
-        console.error("Error:", error);
-        return new Response(JSON.stringify({ error: error.message }), {
+        console.error("General Function Error:", error);
+        return new Response(JSON.stringify({ error: `Internal Server Error: ${error.message}` }), {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
-            status: 500,
+            status: 200, // Return 200 to allow client to display error
         });
     }
 });

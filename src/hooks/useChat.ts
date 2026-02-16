@@ -16,16 +16,12 @@ export function useChat() {
     const [sessionId, setSessionId] = useState<string | null>(null);
 
     useEffect(() => {
-        // Load session or create new
         let storedSessionId = localStorage.getItem('chat_session_id');
         if (!storedSessionId) {
             storedSessionId = uuidv4();
             localStorage.setItem('chat_session_id', storedSessionId);
         }
         setSessionId(storedSessionId);
-
-        // Ideally load history from Supabase if session exists
-        // For MVP, we start fresh or rely on local state persistence if we added it
     }, []);
 
     const sendMessage = useCallback(async (content: string) => {
@@ -44,14 +40,25 @@ export function useChat() {
                 }
             });
 
-            if (error) throw error;
+            if (error) {
+                console.error('Supabase Invoke Error:', error);
+                throw error;
+            }
+
+            // Check for functional error returned in 200 OK response
+            if (data?.error) {
+                console.error('Edge Function Error:', data.error);
+                toast.error(`Chat Error: ${data.error}`);
+                // Optionally remove the user's message or show error state
+                return;
+            }
 
             if (data?.response) {
                 setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
             }
         } catch (error) {
-            console.error('Chat error:', error);
-            toast.error("Failed to send message. Please try again.");
+            console.error('Chat execution error:', error);
+            toast.error("Failed to connect to assistant. Please check internet or try again.");
         } finally {
             setIsLoading(false);
         }
