@@ -125,7 +125,7 @@ const About = () => {
             }} className="relative">
               <div className="relative rounded-3xl overflow-hidden shadow-luxury">
                 <div className="aspect-[4/5]">
-                  <img alt="Luxury villa interior" className="w-full h-full object-cover" src="/lovable-uploads/635adb9e-4da0-4e64-abac-7f40935860f8.jpg" />
+                  <img alt="Luxury villa interior" className="w-full h-full object-cover" src="/site-assets/635adb9e-4da0-4e64-abac-7f40935860f8.jpg" />
                 </div>
               </div>
               <div className="absolute -bottom-10 -right-10 lg:-right-16 w-40 md:w-56 rounded-2xl overflow-hidden shadow-luxury border-4 border-background">

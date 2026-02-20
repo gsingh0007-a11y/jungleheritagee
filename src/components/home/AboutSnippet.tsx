@@ -45,14 +45,14 @@ export function AboutSnippet() {
             {/* Main Image */}
             <div className="relative rounded-3xl overflow-hidden shadow-luxury">
               <div className="aspect-[4/5]">
-                <img alt="Luxury villa interior at Jungle Heritage" className="w-full h-full object-cover" src="/lovable-uploads/c206c149-b410-4cff-9dba-6379ca7cf7bf.jpg" />
+                <img alt="Luxury villa interior at Jungle Heritage" className="w-full h-full object-cover" src="/site-assets/c206c149-b410-4cff-9dba-6379ca7cf7bf.jpg" />
               </div>
             </div>
 
             {/* Floating Image */}
             <div className="absolute -bottom-10 right-0 lg:-right-16 w-32 md:w-56 rounded-2xl overflow-hidden shadow-luxury border-4 border-background">
               <div className="aspect-square">
-                <img alt="Safari experience" className="w-full h-full object-cover" src="/lovable-uploads/04db6b7f-900e-467e-8f52-0039f279c3d4.jpg" />
+                <img alt="Safari experience" className="w-full h-full object-cover" src="/site-assets/04db6b7f-900e-467e-8f52-0039f279c3d4.jpg" />
               </div>
             </div>
 
