@@ -34,7 +34,7 @@ serve(async (req) => {
             .select('email')
             .single()
 
-        const toEmail = settings?.email || 'reservation@jungleheritage.com'
+        const toEmail = settings?.email || 'gsingh0007@gmail.com'
 
         let subject = ''
         let html = ''
