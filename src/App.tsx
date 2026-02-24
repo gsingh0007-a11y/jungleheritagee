@@ -26,6 +26,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 // Admin Pages
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -57,6 +58,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <Analytics />
+      <SpeedInsights />
       <AuthProvider>
         <BrowserRouter>
           <Routes>
