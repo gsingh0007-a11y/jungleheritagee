@@ -25,6 +25,7 @@ import NotFound from "./pages/NotFound";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import { ChatWidget } from "@/components/chat/ChatWidget";
+import { Analytics } from "@vercel/analytics/react";
 
 // Admin Pages
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -55,6 +56,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <Analytics />
       <AuthProvider>
         <BrowserRouter>
           <Routes>
