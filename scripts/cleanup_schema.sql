@@ -1,0 +1,33 @@
+-- STEP 1: CLEANUP
+DO $$ BEGIN
+    DROP TABLE IF EXISTS public.knowledge_base CASCADE;
+    DROP TABLE IF EXISTS public.chat_sessions CASCADE;
+    DROP TABLE IF EXISTS public.chat_leads CASCADE;
+    DROP TABLE IF EXISTS public.blogs CASCADE;
+    DROP TABLE IF EXISTS public.channel_manager_settings CASCADE;
+    DROP TABLE IF EXISTS public.payment_settings CASCADE;
+    DROP TABLE IF EXISTS public.resort_settings CASCADE;
+    DROP TABLE IF EXISTS public.channel_manager_logs CASCADE;
+    DROP TABLE IF EXISTS public.reviews CASCADE;
+    DROP TABLE IF EXISTS public.experiences CASCADE;
+    DROP TABLE IF EXISTS public.gallery_images CASCADE;
+    DROP TABLE IF EXISTS public.enquiries CASCADE;
+    DROP TABLE IF EXISTS public.tax_config CASCADE;
+    DROP TABLE IF EXISTS public.blocked_dates CASCADE;
+    DROP TABLE IF EXISTS public.bookings CASCADE;
+    DROP TABLE IF EXISTS public.rooms CASCADE;
+    DROP TABLE IF EXISTS public.packages CASCADE;
+    DROP TABLE IF EXISTS public.meal_plan_prices CASCADE;
+    DROP TABLE IF EXISTS public.room_categories CASCADE;
+    DROP TABLE IF EXISTS public.seasons CASCADE;
+    DROP TABLE IF EXISTS public.user_roles CASCADE;
+    DROP TABLE IF EXISTS public.profiles CASCADE;
+    DROP TYPE IF EXISTS public.payment_status CASCADE;
+    DROP TYPE IF EXISTS public.booking_source CASCADE;
+    DROP TYPE IF EXISTS public.season_type CASCADE;
+    DROP TYPE IF EXISTS public.package_type CASCADE;
+    DROP TYPE IF EXISTS public.room_status CASCADE;
+    DROP TYPE IF EXISTS public.meal_plan CASCADE;
+    DROP TYPE IF EXISTS public.booking_status CASCADE;
+    DROP TYPE IF EXISTS public.app_role CASCADE;
+END $$;

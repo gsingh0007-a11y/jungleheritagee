@@ -41,7 +41,7 @@ create policy "Allow public insert/update for sessions"
   with check (true);
 
 -- Functions
-create or update function public.handle_new_lead()
+create or replace function public.handle_new_lead()
 returns trigger as $$
 begin
   -- Logic to send email notification could go here
