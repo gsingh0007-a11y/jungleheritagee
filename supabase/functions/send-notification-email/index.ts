@@ -10,7 +10,7 @@ const corsHeaders = {
 }
 
 interface EmailPayload {
-    type: 'enquiry' | 'booking'
+    type: 'enquiry' | 'booking' | 'chat_lead'
     data: any
 }
 
@@ -65,9 +65,28 @@ serve(async (req) => {
         <p><strong>Total Amount:</strong> ₹${data.grand_total}</p>
         <p><strong>Status:</strong> ${data.status}</p>
       `
+        } else if (type === 'chat_lead') {
+            subject = `New Chat Lead: ${data.name}`
+            html = `
+        <h1>New Lead from AI Assistant</h1>
+        <p><strong>Name:</strong> ${data.name}</p>
+        <p><strong>Email:</strong> ${data.email}</p>
+        <p><strong>Phone:</strong> ${data.phone}</p>
+        <p><strong>Requested Dates:</strong> ${data.travel_dates || data.dates}</p>
+        <p><strong>Guests:</strong> ${data.guests}</p>
+        <p><strong>Status:</strong> New</p>
+        <br/>
+        <p><em>This lead was collected via the AI Chat Assistant.</em></p>
+      `
         }
 
-        console.log(`Sending ${type} email to ${toEmail}...`)
+        console.log(`Sending ${type} email...`)
+        console.log(`Target Email: ${toEmail}`)
+        console.log(`Resend Payload:`, {
+            from: 'Jungle Heritage Resort <onboarding@resend.dev>',
+            to: [toEmail],
+            subject: subject,
+        })
 
         const res = await fetch('https://api.resend.com/emails', {
             method: 'POST',
@@ -76,7 +95,7 @@ serve(async (req) => {
                 'Authorization': `Bearer ${RESEND_API_KEY}`,
             },
             body: JSON.stringify({
-                from: 'Jungle Heritage Resort <onboarding@resend.dev>',
+                from: 'onboarding@resend.dev',
                 to: [toEmail],
                 subject: subject,
                 html: html,
@@ -84,9 +103,10 @@ serve(async (req) => {
         })
 
         const resData = await res.json()
-        console.log('Resend Response:', resData)
+        console.log('Resend Response body:', resData)
 
         if (!res.ok) {
+            console.error('Resend API Error:', resData)
             throw new Error(resData.message || 'Failed to send email via Resend')
         }
 

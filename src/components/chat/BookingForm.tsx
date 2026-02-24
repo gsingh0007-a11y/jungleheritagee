@@ -38,13 +38,32 @@ export function BookingForm({ onSubmit, isLoading: externalLoading }: BookingFor
                 name: formData.name,
                 email: formData.email,
                 phone: formData.phone,
-                dates: `${formData.checkIn} to ${formData.checkOut}`,
+                travel_dates: `${formData.checkIn} to ${formData.checkOut}`,
                 guests: formData.guests,
                 inquiry_type: 'booking',
                 status: 'new'
             });
 
             if (error) throw error;
+
+            // 2. Send email notification
+            try {
+                const { error: funcError } = await supabase.functions.invoke('send-notification-email', {
+                    body: {
+                        type: 'chat_lead',
+                        data: {
+                            name: formData.name,
+                            email: formData.email,
+                            phone: formData.phone,
+                            travel_dates: `${formData.checkIn} to ${formData.checkOut}`,
+                            guests: formData.guests
+                        }
+                    }
+                });
+                if (funcError) console.error("Email notification error:", funcError);
+            } catch (err) {
+                console.error("Failed to send lead notification email:", err);
+            }
 
             toast.success("Booking request sent successfully!");
             onSubmit(formData);
